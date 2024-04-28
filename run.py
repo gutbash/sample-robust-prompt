@@ -24,7 +24,7 @@ def write_data_to_csv(file_name: Path, data: list[list[str]]):
         writer.writerows(data)
 
 # Main function to process data
-async def process_data(input_file: Path, output_file: Path):
+async def process_data(input_file: Path, output_file: Path, limit: int = None):
     
     # Initialize the OpenAI model
     openai = OpenAI(
@@ -38,7 +38,9 @@ async def process_data(input_file: Path, output_file: Path):
 
     # Iterate over each row
     for i, row in enumerate(data[1:], start=1):  # Skip the header row
-        prompt = row[4]  # Fetch the prompt from the "Prompt" column
+        if limit is not None and i > limit:
+            break
+        prompt = row[3]  # Fetch the prompt from the "Prompt" column
         for trial in range(1, 6):  # Generate 5 trials
             
             messages = [
@@ -47,16 +49,15 @@ async def process_data(input_file: Path, output_file: Path):
             
             response = await openai.arun(messages)
             new_row = [
-                response,  # ChatGPT response
-                row[1],    # Class
-                row[2],    # ID
-                row[3],    # Created
-                row[4],    # Prompt
-                row[5],    # QuestionID
-                row[6],    # Stderr
-                row[7],    # Stdout
-                row[8],    # UserEmail
-                row[9],    # UserIp
+                response,  # model response
+                row[1],    # Class ID
+                row[2],    # Created
+                prompt,    # Prompt
+                row[4],    # QuestionID
+                row[5],    # Stderr
+                row[6],    # Stdout
+                row[7],    # UserEmail
+                row[8],    # UserIp
                 trial      # Trial Number
             ]
             data.append(new_row)
@@ -65,8 +66,8 @@ async def process_data(input_file: Path, output_file: Path):
     write_data_to_csv(output_file, data)
 
 # Input and Output file names
-input_file = Path('input_data.csv')
-output_file = Path('output_data.csv')
+input_file = Path('data/input/attempts-2023-07-29T08_36_51.352Z.csv')
+output_file = Path('data/output/attempts-2023-07-29T08_36_51.352Z-sampled.csv')
 
 # Call the main function to process the data
-asyncio.run(process_data(input_file, output_file))
+asyncio.run(process_data(input_file, output_file, limit=1))

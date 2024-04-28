@@ -45,9 +45,10 @@ class UserMessage:
         self.content = content
         self.images = images
         
-        for image in self.images:
-            if isinstance(image, str) and image != "{{image}}":
-                logger.error("Image must be be either a Path or a string with the placerholder '{{image}}'.")
+        if self.images:
+            for image in self.images:
+                if isinstance(image, str) and image != "{{image}}":
+                    logger.error("Image must be be either a Path or a string with the placerholder '{{image}}'.")
         
     def to_openai(self) -> dict:
         """
