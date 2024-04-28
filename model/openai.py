@@ -252,4 +252,4 @@ class OpenAI:
             logger.info(f"│   {created} {id} {fingerprint} {finish_reason} {prompt_tokens} {completion_tokens} {total_tokens}\n         │")
             logger.info(f"╰── Ran OpenAI Completion in {round(end - start, 2)} seconds.")
             
-            return content
+            return content, completion

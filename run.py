@@ -35,6 +35,20 @@ async def process_data(input_file: Path, output_file: Path, limit: int = None, t
     
     # Read data from the input CSV
     data = read_data_from_csv(input_file)
+    new_data = []
+    new_data.append([
+        "model_response",  # Model Response
+        "class_id",   # Class ID
+        "created",   # Created
+        "prompt",    # Prompt
+        "question_id",  # Question ID
+        "stderr",    # Stderr
+        "stdout",    # Stdout
+        "user_email", # User Email
+        "user_ip",    # User IP
+        "completion_object",  # Completion Object
+        "trial_id",     # Trial Number
+    ])
 
     # Iterate over each row
     for i, row in enumerate(data[1:], start=1):  # Skip the header row
@@ -47,7 +61,7 @@ async def process_data(input_file: Path, output_file: Path, limit: int = None, t
                 UserMessage(prompt),
             ]
             
-            response = await openai.arun(messages)
+            response, completion = await openai.arun(messages)
             
             # convert python code block to plain
             response = response.replace("```python", "```")
@@ -64,12 +78,13 @@ async def process_data(input_file: Path, output_file: Path, limit: int = None, t
                 row[6],    # Stdout
                 row[7],    # UserEmail
                 row[8],    # UserIp
-                trial      # Trial Number
+                completion,  # Completion Object
+                trial,      # Trial Number
             ]
-            data.append(new_row)
+            new_data.append(new_row)
 
     # Write the new data into a new CSV file
-    write_data_to_csv(output_file, data)
+    write_data_to_csv(output_file, new_data)
 
 # Input and Output file names
 input_file = Path('data/input/attempts-2023-07-29T08_36_51.352Z.csv')
