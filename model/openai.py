@@ -59,7 +59,7 @@ class OpenAI:
     """
     client: openai.OpenAI
     api_key: str
-    model: str = "gpt-4-vision-preview"
+    model: str = "gpt-4-turbo"
     frequency_penalty: float = 0.0 # -2.0 to 2.0
     presence_penalty: float = 0.0 # -2.0 to 2.0
     logit_bias: Dict[str, int] = None # -100 to 100

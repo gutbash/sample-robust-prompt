@@ -3,12 +3,13 @@ from os import environ
 from model.openai import OpenAI
 from message.message import SystemMessage, UserMessage, ModelMessage
 import asyncio
+from pathlib import Path
 
 # Set your OpenAI API key
 OPENAI_API_KEY = environ.get("OPENAI_API_KEY")
 
 # Read data from the CSV file
-def read_data_from_csv(file_name):
+def read_data_from_csv(file_name: Path) -> list[list[str]]:
     data = []
     with open(file_name, mode='r', newline='', encoding='utf-8') as file:
         reader = csv.reader(file)
@@ -17,15 +18,20 @@ def read_data_from_csv(file_name):
     return data
 
 # Write data to a new CSV file
-def write_data_to_csv(file_name, data):
+def write_data_to_csv(file_name: Path, data: list[list[str]]):
     with open(file_name, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
 # Main function to process data
-async def process_data(input_file, output_file):
+async def process_data(input_file: Path, output_file: Path):
     
-    openai = OpenAI(OPENAI_API_KEY)
+    # Initialize the OpenAI model
+    openai = OpenAI(
+        OPENAI_API_KEY,
+        model="gpt-4-turbo",
+        temperature=0.2,
+    )
     
     # Read data from the input CSV
     data = read_data_from_csv(input_file)
@@ -59,8 +65,8 @@ async def process_data(input_file, output_file):
     write_data_to_csv(output_file, data)
 
 # Input and Output file names
-input_file = 'input_data.csv'
-output_file = 'output_data.csv'
+input_file = Path('input_data.csv')
+output_file = Path('output_data.csv')
 
 # Call the main function to process the data
 asyncio.run(process_data(input_file, output_file))
